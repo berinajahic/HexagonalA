@@ -1,0 +1,68 @@
+service: berina-hexagonal-products
+frameworkVersion: '3'
+
+custom:
+  tableName: 'products-berina-table-${sls:stage}'
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource:
+            - Fn::GetAtt: [ ProductsTable , Arn ]
+  environment:
+    BERINA_TABLE: ${self:custom.tableName}
+
+plugins:
+  - serverless-offline
+
+functions:
+  get:
+    handler: handler.handler
+    events:
+      - httpApi:
+          path: /products/{id}
+          method: get
+  create:
+    handler: handler.handler
+    events:
+      - httpApi:
+          path: /products
+          method: post
+  update:
+    handler: handler.handler
+    events:
+      - httpApi: 
+          path: /products/{id}
+          method: put
+  delete:
+    handler: handler.handler
+    events:
+      - httpApi:
+          path: /products/{id}
+          method: delete
+
+
+resources:
+  Resources:
+    ProductsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: productId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: productId
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        TableName: ${self:custom.tableName}

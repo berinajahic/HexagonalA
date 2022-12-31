@@ -39,18 +39,6 @@ functions:
       - httpApi:
           path: /products
           method: post
-  update:
-    handler: handler.handler
-    events:
-      - httpApi: 
-          path: /products/{id}
-          method: put
-  delete:
-    handler: handler.handler
-    events:
-      - httpApi:
-          path: /products/{id}
-          method: delete
 
 
 resources:

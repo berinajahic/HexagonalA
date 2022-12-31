@@ -29,6 +29,7 @@ const getProduct = async (productID) => {
         }
 }
 
+
 const postProduct = async (product) => {
   let res;
 
